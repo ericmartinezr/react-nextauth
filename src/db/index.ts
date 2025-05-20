@@ -13,25 +13,6 @@ const poolConnection = mysql.createPool({
 });
 const db = drizzle({ client: poolConnection, logger: true });
 
-export async function insertSession(id: number, expiresAt: Date) {
-  return await db
-    .insert(sessionsTable)
-    .values({
-      userId: id,
-      expiresAt,
-    })
-    .onDuplicateKeyUpdate({ set: { expiresAt } })
-    .$returningId();
-}
-
-export async function updateSession(id: number, expiresAt: Date) {
-  return await db
-    .update(sessionsTable)
-    .set({ expiresAt })
-    .where(eq(sessionsTable.id, id))
-    .execute();
-}
-
 export async function insertUser(
   name: string,
   email: string,

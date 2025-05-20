@@ -1,40 +1,22 @@
 'use client';
 
+import { useActionState, useEffect } from 'react';
+import { signup } from '../actions/auth';
 import { signIn } from 'next-auth/react';
-import { useActionState } from 'react';
-import { FormState, SigninFormSchema } from '../lib/definitions';
 import Link from 'next/link';
 
-export async function signin(state: FormState, formData: FormData) {
-  // Validate form fields
-  const validatedFields = SigninFormSchema.safeParse({
-    email: formData.get('email'),
-    password: formData.get('password'),
-  });
-
-  // If any form fields are in valid, return early
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
-
-  const result = await signIn('credentials', {
-    username: formData.get('email'),
-    password: formData.get('password'),
-    redirect: true,
-    callbackUrl: '/dashboard',
-  });
-
-  if (!result?.ok) {
-    return {
-      message: 'Invalid credentials',
-    };
-  }
-}
-
-export default function Login() {
-  const [state, action, pending] = useActionState(signin, undefined);
+export default function Register() {
+  const [state, action, pending] = useActionState(signup, undefined);
+  useEffect(() => {
+    if (state?.success) {
+      signIn('credentials', {
+        username: state.username,
+        password: state.password,
+        redirect: true,
+        callbackUrl: '/dashboard',
+      });
+    }
+  }, [state]);
 
   return (
     <div className='flex min-h-screen items-center justify-center bg-base-200'>
@@ -42,8 +24,25 @@ export default function Login() {
         action={action}
         className='card w-full max-w-md bg-zinc-900 border border-primary shadow-xl p-8 space-y-6'>
         <h2 className='text-2xl font-bold text-center text-base-content mb-4'>
-          Sign In
+          Sign Up
         </h2>
+        <div>
+          <label
+            htmlFor='name'
+            className='block text-sm font-medium text-base-content mb-1'>
+            Name
+          </label>
+          <input
+            id='name'
+            name='name'
+            type='name'
+            placeholder='Name'
+            className='input w-full bg-base-100 border border-primary/40 text-base-content focus:outline-none focus:ring-2 focus:ring-primary/70 focus:border-primary/70 transition-all duration-200 shadow-sm rounded-xl text-lg py-4 px-4'
+            autoComplete='name'
+          />
+        </div>
+        {state?.errors?.name && <p>{state.errors.name}</p>}
+
         <div>
           <label
             htmlFor='email'
@@ -59,6 +58,7 @@ export default function Login() {
             autoComplete='email'
           />
         </div>
+        {state?.errors?.email && <p>{state.errors.email}</p>}
 
         <div>
           <label
@@ -74,19 +74,27 @@ export default function Login() {
             autoComplete='current-password'
           />
         </div>
+        {state?.errors?.password && (
+          <div>
+            <p>Password must:</p>
+            <ul>
+              {state.errors.password.map((error) => (
+                <li key={error}>- {error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <button
           disabled={pending}
           type='submit'
           className='btn btn-primary w-full text-base-100 font-semibold'>
-          {pending ? 'Signing In...' : 'Sign In'}
+          {pending ? 'Creating account...' : 'Create account'}
         </button>
 
         <div className='text-center text-xs'>
-          <Link href={'/register'}>Create account</Link>
+          <Link href={'/login'}>Sign in</Link>
         </div>
-
-        {state?.message && <p>{state.message}</p>}
       </form>
     </div>
   );

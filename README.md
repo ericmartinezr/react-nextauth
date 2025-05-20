@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A simple project using Next.js and NextAuth using credentials against a database. For learning purposes.
 
 ## Getting Started
 
