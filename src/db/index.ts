@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/mysql2';
 import mysql from 'mysql2/promise';
-import { sessionsTable, usersTable } from './schema';
+import { usersTable } from './schema';
 import { eq } from 'drizzle-orm';
 
 const poolConnection = mysql.createPool({
