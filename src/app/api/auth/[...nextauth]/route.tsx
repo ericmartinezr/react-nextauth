@@ -21,8 +21,6 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         const email = credentials?.username;
         const password = credentials?.password;
-        console.log('email', email);
-        console.log('pwd', password);
 
         if (email && password) {
           // Compare against db
